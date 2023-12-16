@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import * as S from './styles'
-import { error } from 'console'
 
 const claimUsernameFormSchema = z.object({
   username: z
