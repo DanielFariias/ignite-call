@@ -1,10 +1,22 @@
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
-import { ArrowRight } from 'phosphor-react'
-import { signIn } from 'next-auth/react'
+import { ArrowRight, Check } from 'phosphor-react'
+import { signIn, useSession } from 'next-auth/react'
+
+import { useSearchParams } from 'next/navigation'
 
 import * as S from './styles'
 
 export default function RegisterPage() {
+  const session = useSession()
+  const params = useSearchParams()
+
+  async function handleConnectCalendar() {
+    await signIn('google')
+  }
+
+  const hasAuthError = !!params.get('error')
+  const isSignedIn = session.status === 'authenticated'
+
   return (
     <S.Container>
       <S.Header>
@@ -20,16 +32,35 @@ export default function RegisterPage() {
       <S.ConnectBox>
         <S.ConnectItem>
           <Text>Google Calendar</Text>
-          <Button
-            variant={'secondary'}
-            size={'sm'}
-            onClick={() => signIn('google')}
-          >
-            Conectar
-            <ArrowRight />
-          </Button>
+          {!isSignedIn && (
+            <Button
+              variant={'secondary'}
+              size={'sm'}
+              onClick={() => signIn('google')}
+            >
+              Conectar
+              <ArrowRight />
+            </Button>
+          )}
+          {isSignedIn && (
+            <Button
+              variant={'secondary'}
+              size={'sm'}
+              onClick={handleConnectCalendar}
+              disabled
+            >
+              Conectado <Check />
+            </Button>
+          )}
         </S.ConnectItem>
-        <Button type="submit">
+
+        {hasAuthError && (
+          <S.AuthError size={'sm'}>
+            Falha ao se conectar ao Google, verifique se você habilitou as
+            permissões de acesso ao Google Calendar
+          </S.AuthError>
+        )}
+        <Button type="submit" disabled={!isSignedIn}>
           Próximo passo <ArrowRight />
         </Button>
       </S.ConnectBox>
