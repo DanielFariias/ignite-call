@@ -4,7 +4,7 @@ import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { api } from '@/lib/axios'
 import { AxiosError } from 'axios'
@@ -26,6 +26,7 @@ type TRegisterFormData = z.infer<typeof registerFormSchema>
 
 export default function RegisterPage() {
   const query = useSearchParams()
+  const router = useRouter()
 
   const {
     register,
@@ -52,6 +53,8 @@ export default function RegisterPage() {
         username,
         name,
       })
+
+      router.push('/register/connect-calendar')
     } catch (err) {
       if (err instanceof AxiosError && err.response?.data.message) {
         alert(err.response.data.message)
