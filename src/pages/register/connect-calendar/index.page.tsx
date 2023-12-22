@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 
 import * as S from './styles'
 
-export default function RegisterPage() {
+export default function ConnectCalendarPage() {
   const session = useSession()
   const params = useSearchParams()
 
