@@ -4,6 +4,7 @@ import * as S from './styles'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { prisma } from '@/lib/prisma'
 import { ScheduleForm } from './schedule-form'
+import { NextSeo } from 'next-seo'
 
 interface ISchedulePageProps {
   user: {
@@ -15,15 +16,19 @@ interface ISchedulePageProps {
 
 export default function SchedulePage({ user }: ISchedulePageProps) {
   return (
-    <S.Container>
-      <S.UserHeader>
-        <Avatar src={user.avatarUrl} alt={user.name} />
-        <Heading>{user.name}</Heading>
-        <Text>{user.bio}</Text>
-      </S.UserHeader>
+    <>
+      <NextSeo title={`Agendar com ${user.name} | Ignite Call`} />
 
-      <ScheduleForm />
-    </S.Container>
+      <S.Container>
+        <S.UserHeader>
+          <Avatar src={user.avatarUrl} alt={user.name} />
+          <Heading>{user.name}</Heading>
+          <Text>{user.bio}</Text>
+        </S.UserHeader>
+
+        <ScheduleForm />
+      </S.Container>
+    </>
   )
 }
 
