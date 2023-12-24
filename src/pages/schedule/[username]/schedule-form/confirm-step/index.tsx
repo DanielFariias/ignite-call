@@ -6,6 +6,9 @@ import * as S from './styles'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import dayjs from 'dayjs'
+import { api } from '@/lib/axios'
+import { useParams } from 'next/navigation'
 
 const confirmFormSchema = z.object({
   name: z
@@ -17,7 +20,15 @@ const confirmFormSchema = z.object({
 
 type TConfirmFormSchema = z.infer<typeof confirmFormSchema>
 
-export default function ConfirmStep() {
+interface IConfirmStepProps {
+  schedulingDate: Date
+  onClearSelectedDateTime: () => void
+}
+
+export default function ConfirmStep({
+  schedulingDate,
+  onClearSelectedDateTime,
+}: IConfirmStepProps) {
   const {
     register,
     handleSubmit,
@@ -26,9 +37,24 @@ export default function ConfirmStep() {
     resolver: zodResolver(confirmFormSchema),
   })
 
-  function handleConfirmScheduling(data: TConfirmFormSchema) {
-    console.log(data)
+  const params = useParams()
+  const username = params?.username
+
+  async function handleConfirmScheduling(data: TConfirmFormSchema) {
+    const { name, email, observations } = data
+
+    await api.post(`/users/${username}/schedule`, {
+      name,
+      email,
+      observations,
+      date: schedulingDate,
+    })
+
+    onClearSelectedDateTime()
   }
+
+  const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
+  const describedTime = dayjs(schedulingDate).format('HH:mm[h]')
 
   return (
     <S.ConfirmContainer
@@ -38,11 +64,11 @@ export default function ConfirmStep() {
       <S.FormHeader>
         <Text>
           <CalendarBlank />
-          22 de Setembro de 2022
+          {describedDate}
         </Text>
         <Text>
           <Clock />
-          18:00h
+          {describedTime}
         </Text>
       </S.FormHeader>
 
@@ -81,7 +107,11 @@ export default function ConfirmStep() {
       </label>
 
       <S.FormActions>
-        <Button type="button" variant="tertiary">
+        <Button
+          type="button"
+          variant="tertiary"
+          onClick={onClearSelectedDateTime}
+        >
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>
